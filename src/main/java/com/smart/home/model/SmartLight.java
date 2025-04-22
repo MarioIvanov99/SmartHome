@@ -1,0 +1,51 @@
+package com.smart.home.model;
+
+import com.smart.home.model.strategy.LumenStrategy;
+import com.smart.home.model.strategy.StrongLumenStrategy;
+import com.smart.home.util.Validator;
+
+public class SmartLight {
+    private final DeviceConfig config;
+    private final int maxLumens;
+    private LumenStrategy lumenStrategy;
+
+    private SmartLight(Builder builder) {
+        this.config = builder.config;
+        this.maxLumens = builder.maxLumens;
+        this.lumenStrategy = builder.lumenStrategy != null ? builder.lumenStrategy : new StrongLumenStrategy();
+    }
+
+    public int getLumenOutput() {
+        return lumenStrategy.getLumenOutput(maxLumens);
+    }
+
+    public void setLumenStrategy(LumenStrategy lumenStrategy) {
+        this.lumenStrategy = lumenStrategy;
+    }
+
+    public static class Builder {
+        private DeviceConfig config;
+        private int maxLumens;
+        private LumenStrategy lumenStrategy;
+
+        public Builder config(DeviceConfig config) {
+            this.config = config;
+            return this;
+        }
+
+        public Builder maxLumens(int maxLumens) {
+            Validator.checkNotNegative(maxLumens, "Max lumens");
+            this.maxLumens = maxLumens;
+            return this;
+        }
+
+        public Builder lumenStrategy(LumenStrategy lumenStrategy) {
+            this.lumenStrategy = lumenStrategy;
+            return this;
+        }
+
+        public SmartLight build() {
+            return new SmartLight(this);
+        }
+    }
+}
